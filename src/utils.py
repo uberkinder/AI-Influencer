@@ -20,15 +20,14 @@ def load_secrets(env_path="config/.env"):
     """
     # Check if .env exists
     if not os.path.exists(env_path):
+        print(f"Secrets file not found: {env_path}")
         return
 
     # Load secrets from .env
     with open(env_path, "r") as env_file:
         for line in env_file:
+            print(line)
             line = line.strip()
             if line and not line.startswith("#"):
                 key, value = line.split("=", 1)
                 os.environ[key] = value
-
-    # Set OpenAI API key
-    openai.api_key = os.environ["OPENAI_API_KEY"]
