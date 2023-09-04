@@ -7,7 +7,7 @@ def reply(message: str, config: dict) -> str:
     openai.api_key = os.getenv("OPENAI_API_KEY")
 
     prompt = "Reply to user like if you are very busy making AGI"
-    chat_completion = openai.Completion.create(
+    chat_completion = openai.ChatCompletion.create(
         model=config["openai"]["model"],
         messages=[
             {"role": "system", "content": config["bot"]["role"]},
@@ -16,7 +16,7 @@ def reply(message: str, config: dict) -> str:
         ],
         temperature=config["openai"]["temperature"],
     )
-    response = chat_completion["choices"][0]["text"]
+    response = chat_completion["choices"][0]["message"]["content"]
     return response
 
 

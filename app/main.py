@@ -48,7 +48,9 @@ async def on_startup(dp):
 async def echo_handler(message: types.Message):
     """This handler will be called when user sends a direct message"""
     try:
-        response = reply(str(message.text), config=cfg)
+        message_text = message.text
+        logger.info("User direct message:\n" + message_text)
+        response = reply(message_text, config=cfg)
         logger.info("ChatGPT response:\n" + response)
         await message.reply(response)
 
