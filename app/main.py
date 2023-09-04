@@ -29,10 +29,9 @@ chat_schedules = {}
 
 async def send_daily_message(chat_id, time_str):
     while True:
-        # new_post = post(
-        #     "Generate a new post on LLMs in your Telegram channel", config=cfg
-        # )
-        new_post = f"This is your daily reminder at {time_str}!"
+        new_post = post(
+            "Generate a new post on LLMs in your Telegram channel", config=cfg
+        )
         now = datetime.now()
         target_time = now.replace(
             hour=int(time_str.split(":")[0]),
