@@ -1,0 +1,52 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# C extensions
+*.so
+
+# Distribution / packaging
+*.tar.xz
+bin/
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Logs
+pip-log.txt
+pip-delete-this-directory.txt
+*.log
+*.pid
+
+# Unit test / coverage reports
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+
+# OS generated files
+.DS_Store
+
+# Configuration files
+.env
+
+# Notebook files
+notebooks/*.ipynb
+
+# Data files
+*.tar.xz
+catboost_info
+data/*
+models/*.pkl
+*.pkl
+*.csv
