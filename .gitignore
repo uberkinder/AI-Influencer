@@ -50,3 +50,4 @@ data/*
 models/*.pkl
 *.pkl
 *.csv
+data
