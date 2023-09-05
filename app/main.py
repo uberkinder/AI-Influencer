@@ -5,6 +5,7 @@ import os
 import sys
 from datetime import datetime, timedelta
 
+import requests
 import yaml
 from aiogram import Bot, Dispatcher, F, Router, types
 from aiogram.enums import ParseMode
@@ -16,12 +17,11 @@ from aiogram.types import (
     ReplyKeyboardMarkup,
     ReplyKeyboardRemove,
 )
-
-from form import UserForm
-
-sys.path.append("../../")
 from src import utils
 from src.chatgpt import post, reply
+from src.text2image import fetch_image
+
+from form import UserForm
 
 # Logging
 logger = logging.getLogger("AI-influencer")
@@ -146,6 +146,15 @@ async def command_enter_name(message: Message, state: FSMContext) -> None:
     print()
     await state.update_data(name=user_name)  # Save name
     # await UserForm.next()  # Go to the next state
+    await state.set_state(UserForm.image_prompt)
+    await message.answer("Great! Enter image prompt?")
+
+
+@form_router.message(UserForm.image_prompt)
+async def command_enter_image_prompt(message: Message, state: FSMContext) -> None:
+    image_prompt = message.text
+    await state.update_data(image_prompt=image_prompt)  # Save name
+    # await UserForm.next()  # Go to the next state
     await state.set_state(UserForm.age)
     await message.answer("Great! How old are you?")
 
@@ -157,11 +166,17 @@ async def command_enter_age(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     await state.clear()  # Clear the state
 
-    await message.answer(
+    image_url = await fetch_image(data["image_prompt"])
+
+    caption = (
         f"Great, here is what you told me:\n"
         f"- Name: {data['name']}\n"
+        f"- Image prompt: {data['image_prompt']}\n"
         f"- Age: {data['age']}\n"
     )
+
+    await message.reply_photo(photo=image_url, caption=caption)
+
     chat_id = message.chat.id
     with open(f"data/{chat_id}.yml", "w") as f:
         yaml.dump(data, f, default_flow_style=False)
