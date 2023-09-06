@@ -39,6 +39,7 @@ coverage.xml
 
 # Configuration files
 .env
+.venv
 
 # Notebook files
 notebooks/*.ipynb
