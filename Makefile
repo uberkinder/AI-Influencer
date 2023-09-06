@@ -11,7 +11,8 @@ bot-kill:
 	else \
 		echo "No bot.pid file found"; \
 	fi
-
+	@pkill -f "python app/main.py" || echo "No process found for app/main.py"
+	
 install:
 	pip install -r requirements.txt
 
