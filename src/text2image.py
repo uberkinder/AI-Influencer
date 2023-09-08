@@ -38,3 +38,13 @@ async def fetch_image(prompt):
 
     image_url = json.loads(response.text)["output"][0]
     return image_url
+
+
+def create_avatar_prompt(data):
+    prompt = f"A {data['age_group'].lower()} {data['gender'].lower()} of {data['race'].lower()} descent. "
+    if data["special_features"]:
+        prompt += f"With {data['special_features'].lower()}. "
+    prompt += f"Wearing {data['clothing_style'].lower()} clothes and showing a {data['emotion'].lower()} emotion. "
+    if data["background"]:
+        prompt += f"The background is {data['background'].lower()}."
+    return prompt

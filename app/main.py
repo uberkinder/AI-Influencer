@@ -19,9 +19,9 @@ from aiogram.types import (
 )
 from src import utils
 from src.chatgpt import post, reply
-from src.text2image import fetch_image
+from src.text2image import create_avatar_prompt, fetch_image
 
-from form import UserForm
+from form import AvatarForm
 
 # Logging
 logger = logging.getLogger("AI-influencer")
@@ -105,7 +105,7 @@ async def start_bot(message: types.Message):
     welcome_message = (
         "Welcome to the bot! 🤖\n\n"
         "Here's what you can do:\n"
-        "- Use /create to answer a few questions and create your profile.\n\n"
+        "- Use /create_avatar to answer a few questions and create your avatar.\n\n"
         "- Use /set_schedule to set a schedule. E.g.,\n `/set_schedule 09:00 12:30 18:45`\n\n"
         "Type any message to continue."
     )
@@ -113,91 +113,93 @@ async def start_bot(message: types.Message):
     await message.reply(welcome_message)
 
 
-@dp.message(Command("create"))
-async def command_start(message: Message, state: FSMContext) -> None:
-    await state.set_state(UserForm.name)
+@dp.message(Command("create_avatar"))
+async def command_start_avatar(message: Message, state: FSMContext) -> None:
+    await state.set_state(AvatarForm.gender)
     await message.answer(
-        "Hi there! What's your name?",
+        "What gender would you like for your avatar? (Options: Male, Female, Non-binary)",
         reply_markup=ReplyKeyboardRemove(),
     )
 
 
-# @form_router.message(Command("cancel"))
-# @form_router.message(F.text.casefold() == "cancel")
-# async def cancel_handler(message: Message, state: FSMContext) -> None:
-#     """
-#     Allow user to cancel any action
-#     """
-#     current_state = await state.get_state()
-#     if current_state is None:
-#         return
-
-#     logging.info("Cancelling state %r", current_state)
-#     await state.clear()
-#     await message.answer(
-#         "Cancelled.",
-#         reply_markup=ReplyKeyboardRemove(),
-#     )
+@dp.message_handler(state=AvatarForm.gender)
+async def command_enter_gender(message: Message, state: FSMContext) -> None:
+    gender = message.text
+    await state.update_data(gender=gender)
+    await state.set_state(AvatarForm.age_group)
+    await message.answer(
+        "What age group for your avatar? (Options: Child, Young, Adult, Elderly)"
+    )
 
 
-@form_router.message(UserForm.name)
-async def command_enter_name(message: Message, state: FSMContext) -> None:
-    user_name = message.text
-    print()
-    await state.update_data(name=user_name)  # Save name
-    # await UserForm.next()  # Go to the next state
-    await state.set_state(UserForm.image_prompt)
-    await message.answer("Great! Enter image prompt?")
+@dp.message_handler(state=AvatarForm.age_group)
+async def command_enter_age_group(message: Message, state: FSMContext) -> None:
+    age_group = message.text
+    await state.update_data(age_group=age_group)
+    await state.set_state(AvatarForm.race)
+    await message.answer(
+        "Choose a race/ethnicity for your avatar? (Options: Caucasian, Asian, African, Hispanic, etc.)"
+    )
 
 
-@form_router.message(UserForm.image_prompt)
-async def command_enter_image_prompt(message: Message, state: FSMContext) -> None:
-    image_prompt = message.text
-    await state.update_data(image_prompt=image_prompt)  # Save name
-    # await UserForm.next()  # Go to the next state
-    await state.set_state(UserForm.age)
-    await message.answer("Great! How old are you?")
+@dp.message_handler(state=AvatarForm.race)
+async def command_enter_race(message: Message, state: FSMContext) -> None:
+    race = message.text
+    await state.update_data(race=race)
+    await state.set_state(AvatarForm.special_features)
+    await message.answer("Any special features? (e.g., Tattoos, Scars, Glasses)")
 
 
-@form_router.message(UserForm.age)
-async def command_enter_age(message: Message, state: FSMContext) -> None:
-    user_age = message.text  # assume the user enters a number
-    await state.update_data(age=user_age)  # Save age
+@dp.message_handler(state=AvatarForm.special_features)
+async def command_enter_special_features(message: Message, state: FSMContext) -> None:
+    special_features = message.text
+    await state.update_data(special_features=special_features)
+    await state.set_state(AvatarForm.clothing_style)
+    await message.answer("Any clothing style? (e.g., T-shirt, Hoodie)")
+
+
+@dp.message_handler(state=AvatarForm.clothing_style)
+async def command_enter_clothing_style(message: Message, state: FSMContext) -> None:
+    clothing_style = message.text
+    await state.update_data(special_features=clothing_style)
+    await state.set_state(AvatarForm.emotion)
+    await message.answer("Any special emotion? (e.g., Angry, Happy, Sad)")
+
+
+@dp.message_handler(state=AvatarForm.emotion)
+async def command_enter_emotion(message: Message, state: FSMContext) -> None:
+    emotion = message.text
+    await state.update_data(special_features=emotion)
+    await state.set_state(AvatarForm.background)
+    await message.answer("Any special background? (e.g., Forest, Black, Sea)")
+
+
+# После последнего обработчика (background):
+@dp.message_handler(state=AvatarForm.background)
+async def command_enter_background(message: Message, state: FSMContext) -> None:
+    background = message.text
+    await state.update_data(background=background)
+
     data = await state.get_data()
-    await state.clear()  # Clear the state
-
-    image_url = await fetch_image(data["image_prompt"])
+    await state.clear()
+    image_url = await fetch_image(create_avatar_prompt(data))
 
     caption = (
-        f"Great, here is what you told me:\n"
-        f"- Name: {data['name']}\n"
-        f"- Image prompt: {data['image_prompt']}\n"
-        f"- Age: {data['age']}\n"
+        f"Here's what you selected for your avatar:\n"
+        f"- Gender: {data['gender']}\n"
+        f"- Age Group: {data['age_group']}\n"
+        f"- Race: {data['race']}\n"
+        f"- Special Features: {data['special_features']}\n"
+        f"- Clothing Style: {data['clothing_style']}\n"
+        f"- Emotion: {data['emotion']}\n"
+        f"- Background: {data['background']}\n"
     )
 
     await message.reply_photo(photo=image_url, caption=caption)
 
     chat_id = message.chat.id
-    with open(f"data/{chat_id}.yml", "w") as f:
+    with open(f"data/{chat_id}_avatar.yml", "w") as f:
         yaml.dump(data, f, default_flow_style=False)
-
-
-# # Handler for solo messages
-# @dp.message()
-# async def echo_handler(message: types.Message):
-#     """This handler will be called when user sends a direct message"""
-#     try:
-#         message_text = message.text
-#         logger.info("User direct message:\n" + message_text)
-#         response = reply(message_text, config=cfg)
-#         logger.info("ChatGPT response:\n" + response)
-#         await message.reply(response)
-
-#     except Exception as e:
-#         dev = cfg["developers"]
-#         msg = f"Sorry, I have internal problems. Please contact {dev}"
-#         await message.reply(msg)
-#         logger.error(e)
 
 
 async def main() -> None:
