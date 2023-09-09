@@ -122,7 +122,7 @@ async def command_start_avatar(message: Message, state: FSMContext) -> None:
     )
 
 
-@dp.message_handler(state=AvatarForm.gender)
+@form_router.message(AvatarForm.gender)
 async def command_enter_gender(message: Message, state: FSMContext) -> None:
     gender = message.text
     await state.update_data(gender=gender)
@@ -132,7 +132,7 @@ async def command_enter_gender(message: Message, state: FSMContext) -> None:
     )
 
 
-@dp.message_handler(state=AvatarForm.age_group)
+@form_router.message(AvatarForm.age_group)
 async def command_enter_age_group(message: Message, state: FSMContext) -> None:
     age_group = message.text
     await state.update_data(age_group=age_group)
@@ -142,7 +142,7 @@ async def command_enter_age_group(message: Message, state: FSMContext) -> None:
     )
 
 
-@dp.message_handler(state=AvatarForm.race)
+@form_router.message(AvatarForm.race)
 async def command_enter_race(message: Message, state: FSMContext) -> None:
     race = message.text
     await state.update_data(race=race)
@@ -150,7 +150,7 @@ async def command_enter_race(message: Message, state: FSMContext) -> None:
     await message.answer("Any special features? (e.g., Tattoos, Scars, Glasses)")
 
 
-@dp.message_handler(state=AvatarForm.special_features)
+@form_router.message(AvatarForm.special_features)
 async def command_enter_special_features(message: Message, state: FSMContext) -> None:
     special_features = message.text
     await state.update_data(special_features=special_features)
@@ -158,7 +158,7 @@ async def command_enter_special_features(message: Message, state: FSMContext) ->
     await message.answer("Any clothing style? (e.g., T-shirt, Hoodie)")
 
 
-@dp.message_handler(state=AvatarForm.clothing_style)
+@form_router.message(AvatarForm.clothing_style)
 async def command_enter_clothing_style(message: Message, state: FSMContext) -> None:
     clothing_style = message.text
     await state.update_data(special_features=clothing_style)
@@ -166,7 +166,7 @@ async def command_enter_clothing_style(message: Message, state: FSMContext) -> N
     await message.answer("Any special emotion? (e.g., Angry, Happy, Sad)")
 
 
-@dp.message_handler(state=AvatarForm.emotion)
+@form_router.message(AvatarForm.emotion)
 async def command_enter_emotion(message: Message, state: FSMContext) -> None:
     emotion = message.text
     await state.update_data(special_features=emotion)
@@ -175,7 +175,7 @@ async def command_enter_emotion(message: Message, state: FSMContext) -> None:
 
 
 # После последнего обработчика (background):
-@dp.message_handler(state=AvatarForm.background)
+@form_router.message(AvatarForm.background)
 async def command_enter_background(message: Message, state: FSMContext) -> None:
     background = message.text
     await state.update_data(background=background)
