@@ -10,11 +10,12 @@ URL = "https://stablediffusionapi.com/api/v3/text2img"
 
 
 async def fetch_image(prompt):
+    negative_prompt = "ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, deformed, body out of frame, bad anatomy, watermark, signature, cut off, low contrast, underexposed, overexposed, bad art, beginner, amateur, distorted face, blurry, draft, grainy"
     payload = json.dumps(
         {
             "key": os.getenv("SD_API_KEY"),
             "prompt": prompt,
-            "negative_prompt": None,
+            "negative_prompt": negative_prompt,
             "width": "512",
             "height": "512",
             "samples": "1",
@@ -25,7 +26,7 @@ async def fetch_image(prompt):
             "multi_lingual": "no",
             "panorama": "no",
             "self_attention": "no",
-            "upscale": "no",
+            "upscale": "yes",
             "embeddings_model": None,
             "webhook": None,
             "track_id": None,
@@ -46,5 +47,7 @@ def create_avatar_prompt(data):
         prompt += f"With {data['special_features'].lower()}. "
     prompt += f"Wearing {data['clothing_style'].lower()} clothes and showing a {data['emotion'].lower()} emotion. "
     if data["background"]:
-        prompt += f"The background is {data['background'].lower()}."
+        prompt += f"The background is {data['background'].lower()}. "
+    if data["style"]:
+        prompt += f"The style of image is {data['style'].lower()}."
     return prompt

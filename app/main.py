@@ -161,7 +161,7 @@ async def command_enter_special_features(message: Message, state: FSMContext) ->
 @form_router.message(AvatarForm.clothing_style)
 async def command_enter_clothing_style(message: Message, state: FSMContext) -> None:
     clothing_style = message.text
-    await state.update_data(special_features=clothing_style)
+    await state.update_data(clothing_style=clothing_style)
     await state.set_state(AvatarForm.emotion)
     await message.answer("Any special emotion? (e.g., Angry, Happy, Sad)")
 
@@ -169,7 +169,15 @@ async def command_enter_clothing_style(message: Message, state: FSMContext) -> N
 @form_router.message(AvatarForm.emotion)
 async def command_enter_emotion(message: Message, state: FSMContext) -> None:
     emotion = message.text
-    await state.update_data(special_features=emotion)
+    await state.update_data(emotion=emotion)
+    await state.set_state(AvatarForm.style)
+    await message.answer("Any special style? (e.g., Anime, Cartoon, Pixel)")
+
+
+@form_router.message(AvatarForm.style)
+async def command_enter_style(message: Message, state: FSMContext) -> None:
+    style = message.text
+    await state.update_data(style=style)
     await state.set_state(AvatarForm.background)
     await message.answer("Any special background? (e.g., Forest, Black, Sea)")
 
@@ -192,6 +200,7 @@ async def command_enter_background(message: Message, state: FSMContext) -> None:
         f"- Special Features: {data['special_features']}\n"
         f"- Clothing Style: {data['clothing_style']}\n"
         f"- Emotion: {data['emotion']}\n"
+        f"- Style: {data['style']}\n"
         f"- Background: {data['background']}\n"
     )
 

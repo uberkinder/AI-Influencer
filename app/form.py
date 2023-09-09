@@ -8,4 +8,5 @@ class AvatarForm(StatesGroup):
     special_features = State()
     clothing_style = State()
     emotion = State()
+    style = State()
     background = State()
